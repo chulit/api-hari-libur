@@ -7,8 +7,13 @@ import { dateSchema } from '@/schema/date_schema.ts'
 import { zValidator } from '@/middleware/zod.ts'
 import { HTTPException } from '@hono/hono/http-exception'
 
-const kvPath = Deno.env.get('DENO_KV_PATH')
-const kv = await Deno.openKv(kvPath)
+let kv: Deno.Kv | null = null
+try {
+  const kvPath = Deno.env.get('DENO_KV_PATH')
+  kv = await Deno.openKv(kvPath)
+} catch (err) {
+  console.warn('Deno KV database not initialized or not attached:', err)
+}
 
 const app = new Hono()
 

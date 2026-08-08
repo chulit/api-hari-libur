@@ -3,7 +3,7 @@ import { crawler } from '@/libraries/scraper.ts'
 type Holiday = { name: string; date: string }
 
 export const getHoliday = async (
-  kv: Deno.Kv,
+  kv: Deno.Kv | null,
   year: string,
   month?: string
 ): Promise<(Holiday & { is_national_holiday: boolean })[]> => {
@@ -23,7 +23,7 @@ export const getHoliday = async (
 }
 
 export const getHolidayDate = async (
-  kv: Deno.Kv,
+  kv: Deno.Kv | null,
   date: Date
 ) => {
   const current = new Date(
@@ -50,23 +50,34 @@ export const getHolidayDate = async (
 }
 
 export const getHolidayYearly = async (
-  kv: Deno.Kv,
+  kv: Deno.Kv | null,
   year: string
 ): Promise<Holiday[]> => {
-  const cached = await kv.get<Holiday[]>([year])
-
-  if (cached.value) return cached.value
+  if (kv) {
+    try {
+      const cached = await kv.get<Holiday[]>([year])
+      if (cached.value) return cached.value
+    } catch {
+      // Ignore KV read errors and fallback to scraper
+    }
+  }
 
   const data = await getData(year)
 
   if (data.length === 0) return data
 
-  const currentYear = new Date().getFullYear()
-  const expireIn = Number(year) >= currentYear
-    ? 1000 * 60 * 60 * 24 * 30
-    : undefined
+  if (kv) {
+    try {
+      const currentYear = new Date().getFullYear()
+      const expireIn = Number(year) >= currentYear
+        ? 1000 * 60 * 60 * 24 * 30
+        : undefined
 
-  await kv.set([year], data, { expireIn })
+      await kv.set([year], data, { expireIn })
+    } catch {
+      // Ignore KV write errors
+    }
+  }
 
   return data
 }
