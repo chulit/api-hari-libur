@@ -49,12 +49,14 @@ This application is ready to deploy on **Deno Deploy**.
 1. Go to [dash.deno.com](https://dash.deno.com) and create a new project.
 2. Connect your GitHub repository `api-hari-libur`.
 3. Set the Entrypoint to `src/main.ts`.
-4. Click **Deploy**. Automatic deployments will be triggered whenever you push to the `main` branch.
+4. **Attach KV Database:** Go to project settings -> **KV** tab -> Click **Create Database** (or Attach Database).
+5. Click **Deploy**. Automatic deployments will be triggered whenever you push to the `main` branch.
 
 ### Option 2: GitHub Actions Workflow
 This repository includes a `.github/workflows/deploy.yml` CI/CD workflow:
-1. Ensure your repository secret `DENO_DEPLOY_TOKEN` is set if using `deployctl`.
-2. Push your changes to `main` branch to trigger automatic code formatting checks, linting, and deployment.
+1. Ensure your project in Deno Deploy has a KV database created under the **KV** tab.
+2. Ensure your repository secret `DENO_DEPLOY_TOKEN` is set if using `deployctl`.
+3. Push your changes to `main` branch to trigger automatic code formatting checks, linting, and deployment.
 
 ## License
 

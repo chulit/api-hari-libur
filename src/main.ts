@@ -7,7 +7,8 @@ import { dateSchema } from '@/schema/date_schema.ts'
 import { zValidator } from '@/middleware/zod.ts'
 import { HTTPException } from '@hono/hono/http-exception'
 
-const kv = await Deno.openKv()
+const kvPath = Deno.env.get('DENO_KV_PATH')
+const kv = await Deno.openKv(kvPath)
 
 const app = new Hono()
 
